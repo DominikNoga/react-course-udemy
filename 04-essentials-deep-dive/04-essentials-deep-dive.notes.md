@@ -158,3 +158,7 @@ export default function Player({ name, symbol }) {
   )
 }
 ````
+
+## Sharing the state
+If two components needs to share the same state, we have to use pattern called state lifting.
+Which means we have to move the state to the neearest ancestor of both components.

@@ -15,8 +15,9 @@ export default function Player({ name, symbol }) {
     setPlayersName(newName);
   };
 
+
   return (
-    <span className="player">
+    <span>
       {
         showInput ?
           <input type='text' onChange={onNameChange} placeholder={`${symbol} player's name`} value={playerName} required /> :

@@ -1,21 +1,34 @@
-import React from 'react'
-
 const initialGameBoard = [
     [null, null, null],
     [null, null, null],
     [null, null, null]
-]
-export default function GameBoard() {
+];
+
+export default function GameBoard({onSelectSquare, turns}) {
+    const gameBoard = [...initialGameBoard];
+    turns.forEach(turn => {
+        const {
+            square: {
+                row, col
+            }, player
+        } = turn;
+        gameBoard[row][col] = player;
+    });
+
+    const handlePlaceSelection = (row, col) => {
+        onSelectSquare(row, col);
+    }
+
     return (
         <ol id='game-board'>
             {
-                initialGameBoard.map((row, index) => (
-                    <li key={index}>
+                gameBoard.map((row, rowIndex) => (
+                    <li key={rowIndex}>
                         <ol>
                             {
                                 row.map((playerSymbol, colIndex) => (
                                     <li key={colIndex}>
-                                        <button>
+                                        <button onClick={() => handlePlaceSelection(rowIndex, colIndex)} disabled={playerSymbol}>
                                             { playerSymbol }
                                         </button>
                                     </li>
