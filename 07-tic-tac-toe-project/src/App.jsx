@@ -2,34 +2,16 @@ import { useState } from "react"
 import GameBoard from "./components/GameBoard"
 import Player from "./components/Player"
 import Log from "./components/Log";
-import { WINNING_COMBINATIONS } from "./helpers/winning-combinations";
-
-const getOppositePlayer = (player) => player === 'X' ? 'O' : 'X';
-const getActivePlayer = (turns) => turns.length ? getOppositePlayer(turns[0].player) : 'X';
-
-const checkForWin = (updatedTurns, currentPlayer) => {
-  let isWinner = false;
-  for (const condition of WINNING_COMBINATIONS) {
-    isWinner = true;
-    for (const { square: { row, col } } of updatedTurns) {
-      if (!condition.includes({ row, col })) {
-        isWinner = false;
-        break;
-      }
-    }
-    if (isWinner)
-      break;
-  }
-
-  console.log(isWinner);
-
-  return isWinner ? currentPlayer : null;
-}
+import { checkForWin, getActivePlayer, getGameBoard, getOppositePlayer } from "./helpers/game-logic";
+import { initialGameBoard } from "./constants/const";
+import GameOver from "./components/GameOver";
 
 function App() {
   const [gameTurns, setGameTurns] = useState([]);
   const activePlayer = getActivePlayer(gameTurns);
-  const hasWon = checkForWin(gameTurns, activePlayer);
+  const gameBoard = getGameBoard(initialGameBoard, gameTurns);
+  const winner = checkForWin(gameBoard, getOppositePlayer(activePlayer));
+  const isDraw = gameTurns.length === 9 && !winner;
 
   function handleSelectSquare(rowIndex, colIndex) {
     setGameTurns((prevTurns) => {
@@ -44,6 +26,10 @@ function App() {
     });
   }
 
+  const onRematchClick = () => {
+    setGameTurns([]);
+  }
+
   return (
     <main>
       <div id="game-container">
@@ -55,7 +41,8 @@ function App() {
             <Player name='Player 2' symbol='O' />
           </li>
         </ol>
-        <GameBoard onSelectSquare={handleSelectSquare} turns={gameTurns} />
+        { (winner || isDraw) && <GameOver winner={winner} onRematchClick={onRematchClick}/> }
+        <GameBoard onSelectSquare={handleSelectSquare} gameBoard={gameBoard} />
       </div>
       <Log turns={gameTurns} />
     </main>
