@@ -17,6 +17,7 @@ export default function InputPanel({investmentData, onInputChange}) {
             name={INPUT_NAMES.INIT_INVESTMENT}
             onChange={(event) => onInputChange(INPUT_NAMES.INIT_INVESTMENT, event.target.value)}
             value={investmentData.initialInvestment}
+            min={0}
             required
           />
         </p>
@@ -29,6 +30,7 @@ export default function InputPanel({investmentData, onInputChange}) {
             id={INPUT_NAMES.ANNUAL_INVESTMENT}
             onChange={(event) => onInputChange(INPUT_NAMES.ANNUAL_INVESTMENT, event.target.value)}
             value={investmentData.annualInvestment}
+            min={0}
             required
           />
         </p>
@@ -43,6 +45,7 @@ export default function InputPanel({investmentData, onInputChange}) {
             id={INPUT_NAMES.EXPECTED_RETURN}
             onChange={(event) => onInputChange(INPUT_NAMES.EXPECTED_RETURN, event.target.value)}
             value={investmentData.expectedReturn}
+            min={0}
             required
           />
         </p>
@@ -54,6 +57,7 @@ export default function InputPanel({investmentData, onInputChange}) {
             id={INPUT_NAMES.DURATION}
             onChange={(event) => onInputChange(INPUT_NAMES.DURATION, event.target.value)}
             value={investmentData.duration}
+            min={1}
             required
           />
         </p>

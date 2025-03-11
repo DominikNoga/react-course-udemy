@@ -12,8 +12,6 @@ function App() {
     duration: 10
   });
 
-  const result = calculateInvestmentResults(investmentData);
-
   const onInputChange = (inputName, value) => {
     setInvestmentData(prevData => ({
       ...prevData,
@@ -26,7 +24,7 @@ function App() {
     <main>
       <Header />
       <InputPanel investmentData={investmentData} onInputChange={onInputChange}/>
-      <InvestmentValue result={result}/>
+      <InvestmentValue investmentData={investmentData}/>
     </main>
   )
 }
