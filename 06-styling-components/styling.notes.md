@@ -61,6 +61,8 @@ It is a third party lib, which provides an access to the ready components.
     npm i styled-components
 ````
 
+<b>Tagged template resources:</b> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates
+
 It gives us the control of an object which has access to the html tags. We can create custom react components
 with styles applied. By using special template tag syntax. Which is like passing template literals to a function.
 ````jsx
