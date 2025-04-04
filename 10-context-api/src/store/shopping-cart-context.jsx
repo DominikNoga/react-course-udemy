@@ -36,6 +36,7 @@ export function CartContextProvider({children}) {
         addItemToCart: handleAddItemToCart,
         updateItemQuantity: handleUpdateCartItemQuantity
     }
+
     return (
         <CartContext value={ctxValue}>
             {

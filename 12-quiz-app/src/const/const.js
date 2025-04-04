@@ -1,0 +1,1 @@
+export const ANSWER_TIME = 30_000;

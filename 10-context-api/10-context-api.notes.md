@@ -26,11 +26,12 @@ In order to provide that context we need to wrap our component with it.
 We either do it like with normal component since React 19+ or by using '.Provider' property.
 ````jsx
 function App() {
-    return (
-        <CartContext value={{items: []}}> {/* Or <CartContext.Provider>*/ }
-            <Header />
-            <Shop onAddItemToCart={handleAddItemToCart} />
-        </CartContext.Provider>
+  return (
+    {/* Or <CartContext.Provider>*/ }
+      <CartContext value={{items: []}}>
+        <Header />
+        <Shop onAddItemToCart={handleAddItemToCart} />
+      </CartContext>
     );
 }
 ````
@@ -96,7 +97,7 @@ export function CartContextProvider({children}) {
     return (
         <CartContext value={ctxValue}>
             {
-                children
+              children
             }
         </CartContext>
     )
