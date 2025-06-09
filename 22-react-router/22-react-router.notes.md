@@ -177,3 +177,56 @@ const router = createBrowserRouter([
 ````
 <b>This also applies to links!!!</b>
 So we can just remove the leading '/' from the 'to' prop and then the link will be appended to the currently active route.
+
+#### Relative prop
+It is possible to add a 'relative' prop to the link component, it works well with '..' path.
+This prop specifies wether we will navigate relatively to the path or to the route definition.
+````jsx
+const router = createBrowserRouter([
+  {
+    path: "/",
+    children: [
+      {
+        path: "",
+        element: <HomePage />,
+      },
+      {
+        path: "products",
+        element: <ProductsPage />,
+      },
+      {
+        path: "/products/:productId",
+        element: <ProductDetailsPage />,
+      }
+    ],
+  },
+]);
+// In ProductDetailsPage
+return (
+  <>
+    // This is relative to the route path so we will move back 1 route to the '/products'
+    <Link to=".." relative="path"/>
+    // This is relative to the route definition so we will move to the '/' route which is parent of products/id
+    <Link to=".." relative="route"/>
+  </>
+)
+````
+
+#### Default route
+setting index prop to true will set the route as default, and will be loaded when a parent route is entered.
+
+````jsx
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true, // This will render the HomePage as the default route
+        element: <HomePage />,
+      }
+      // ...REST OF THE ROUTES
+    ]
+  }
+````
