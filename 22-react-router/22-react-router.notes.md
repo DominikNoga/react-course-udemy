@@ -230,3 +230,230 @@ const router = createBrowserRouter([
     ]
   }
 ````
+
+### Loaders
+We can load the data right when we enter a route using loader property in route definition.
+Next using the useLoaderData hook we can read this data
+````jsx
+const route = {
+  element: <EventsPage />,
+  loader: async () => {
+    const eventsData = await getAllEvents();
+    if (!eventsData || eventsData.length === 0) {
+      throw new Response("No events found", { status: 404 });
+    }
+    return {
+      events: eventsData.events,
+    }; // This will be available to all routes on the same level and all child components/child routes.
+  }
+}
+function EventsPage() {
+  const { events } = useLoaderParams();
+  return <EventsList events={events} />;
+}
+````
+
+#### When loader is executed?
+It runs when we start navigating to the route, by default the page will be loaded only when the request is finished.
+In order to show that the page is loading we can utilize useNavigation hook.
+````jsx
+export default function EventsPageLayout() {
+  const navigation = useNavigation();
+  // navigation state 
+    // idle - No navigation is currently in progress. The app is at rest.
+    // loading - A route navigation is in progress (e.g., the user clicked a <Link> or the navigate() function is being used), and  data is being fetched by a loader.
+    // submitting - A form submission is in progress, typically via <Form method="post"> or programmatic submission using 
+    //  useFetcher().submit().
+  return (
+    <>
+      <MainNavigation />
+      <main>
+        { navigation.state  === 'loading' && (
+          <p>Loading...</p>
+        )}
+      </main>
+    </>
+  )
+}
+````
+
+#### Error handling
+In order to handle an error we have to throw it in the loader function.
+We can do it by throwing the Response object with a status and some message.
+Next in the place where we want to display this error we can grab the error using 'useRouteError' hook.
+Also in order to check if the error is a Response object thrown in loader or some generic error we can use isRouteErrorResponse hook.
+
+````jsx
+function ErrorPage() {
+  // Get error object
+  const error = useRouteError();
+  // check if this is a Response type object
+  if (isRouteErrorResponse(error)) {
+    /* 
+      {
+        status(HTTP status), statusText(some readable translation of status code), data(message)
+      }
+    */
+    return (
+       <>
+        <MainNavigation />
+        <PageContent title={title}>
+          <p>{error.data}</p>
+        </PageContent>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <MainNavigation />
+      <PageContent title={title}>
+        <p>{message}</p>
+      </PageContent>
+    </>
+  );
+}
+````
+
+#### Getting route params in loader
+````jsx
+// when using loader we get 2 props:
+// * request -> HTTP request, url, etc
+// * params -> all route params
+export async function loader({ request, params }) {
+  const eventData = await getEventById(params.eventId);
+  return {
+    event: eventData.event,
+  };
+}
+````
+
+##### useRouteLoaderData
+If we want to create same loader for several routes we can define a parent route and assign there all routes that will
+need the loader, next we need to assign an id to this parent route and we can now load the data by accessing the
+desired loader.
+````jsx
+// defining a shared loader
+const routePath = {
+  path: ':eventId',
+  id: EVENT_DETAILS_ID,
+  loader: eventDetailsLoader,
+  children: [
+    {
+      index: true,
+      element: <EventDetailPage />,
+    },
+    {
+      path: "edit",
+      element: <EditEventPage />,
+    }
+  ]
+};
+// using the data from that loader
+export default function EventDetailPage() {
+  const { event } = useRouteLoaderData(EVENT_DETAILS_ID);
+
+  return (
+    <div>
+      <h1>Event Detail Page</h1>
+      <EventItem event={event} />
+    </div>
+  )
+}
+````
+
+#### Data submission
+Instead of handling form submission by attaching to the form onSubmit, we can use
+actions, offered by react-router.
+It is similar to the loader, but instead of loading the data we are sending it.
+
+````jsx
+// action assignment
+const routePart = {
+  path: "new",
+  element: <NewEventPage />,
+  action: newEventAction
+}
+// Action definition
+export async function action({request}) {
+  // Data gathered from the form where the submit was triggered
+  const data = await request.formData();
+  const eventData = {
+    title: data.get('title'),
+    image: data.get('image'),
+    date: data.get('date'),
+    description: data.get('description'),
+  };
+  try {
+    addEvent(eventData);
+    // function available in react-router-dom
+    // we need to return something
+    return redirect('/events');
+  } catch(error) {
+    throw new Response(error.message, {status: 500});
+  }
+}
+// form component
+function Form() {
+  return (
+    // This Form component will prevent the default submission behavior and pass the request to the action function
+    // Defined in the route
+    <Form
+      action="/some-route" // we do not pass this param if the action is defined for the current route
+      method='POST' 
+      className={classes.form} />
+  );
+}
+````
+
+##### Programatic submission
+If we want to trigger an action without using a Form component we can use react-router 'submit' method.
+Which does exactly the same.
+````jsx
+function EventItem({ event }) {
+  const submit = useSubmit();
+  function startDeleteHandler() {
+    const proceed = window.confirm('Are you sure?');
+
+    if (proceed) {
+      /**
+       * first argument would be a form data, but here we do not need it
+       * next we have the configuration of the request
+       */
+      submit(null, {
+        method: 'DELETE',
+        action: '/other-route' // should be passed when action from not active route is supposed to be used
+      });
+    }
+  }
+}
+````
+
+##### Validation of the data
+If we want to show BE validation messages or any data coming from BE, we can do this by
+returning the response object in the action function. Then we can get this data using the
+'useActionData' hook.
+
+````jsx
+export async function action({request}) {
+  const data = await request.formData();
+  const eventData = {
+    title: data.get('title'),
+    image: data.get('image'),
+    date: data.get('date'),
+    description: data.get('description'),
+  };
+  try {
+    const response  = await addEvent(eventData);
+    if (response.status === 422) {
+      // direct return of the response
+      return response;
+    }
+    return redirect('/events');
+  } catch(error) {
+    throw new Response(error.message, {status: 500});
+  }
+}
+
+const data = useActionData(); // this can be used in component, this holds response from BE
+````
