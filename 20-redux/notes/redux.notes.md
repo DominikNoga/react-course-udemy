@@ -22,6 +22,7 @@ A third party library for managing application state. It is an alternative to us
 
 ## Writing Redux Code
 - Writing a redux code does not require React. It can be used with any JavaScript or even in Node.js.
+- We never mutate the state directly. Instead, we return a new state object from the reducer.
 - Below is a simplest redux code that demonstrates the core concepts of Redux. Shown on the diagram above.
 ```js
 const redux = require("redux");
@@ -65,4 +66,55 @@ store.subscribe(counterSubscriber);
 
 // dispatch an action to change the state
 store.dispatch(incrementAction);
+```
+
+## React-Redux
+- react-redux is the official React binding for Redux. It provides a way to connect React components to the Redux store.
+- It provides two main hooks: `useSelector` and `useDispatch`.
+  - `useSelector`: A hook that allows you to extract data from the Redux store state, using a selector function.
+  - `useDispatch`: A hook that gives you access to the dispatch function, which you can use to dispatch actions to the Redux store.
+- The `Provider` component from react-redux is used to wrap the root component of your application.
+  It makes the Redux store available to any nested components that need to access the Redux store.
+- When using `useSelector`, the component will automatically re-render whenever the selected state changes.
+```jsx
+// Provide the store to the React application
+import { Provider } from 'react-redux';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+```
+
+```jsx
+const Counter = () => {
+  const { counter, showCounter } = useSelector((state) => state);
+  const dispatch = useDispatch();
+  return (
+    <main className={classes.counter}>
+      {showCounter && <div className={classes.value}>{counter}</div>}
+      <div>
+        <button onClick={() => dispatch(ACTIONS.INC)}>Increment</button>
+        <button onClick={() => dispatch({ ...ACTIONS.CHANGE, payload: value })}>Change by value</button>
+        <button onClick={() => dispatch(ACTIONS.DEC)}>Decrement</button>
+      </div>
+      <button onClick={toggleCounterHandler}>Toggle Counter</button>
+    </main>
+  );
+}
+```
+
+## Redux Toolkit
+- Redux toolkit solves a lot of problems that plain Redux has.
+  - It simplifies the store setup process.
+  - It allows to write a mutable update logic in reducers. But it is not actually mutating the state.
+    Instead, it uses Immer library under the hood to handle immutability.
+  - It provides a way to write reducers that can mutate the state directly, using Immer library under the hood.
+  - It includes useful utilities for common Redux tasks, such as creating actions and reducers.
+- It is the recommended way to write Redux logic in modern applications.
+
+````bash
+npm i @reduxjs/toolkit react-redux
 ````
