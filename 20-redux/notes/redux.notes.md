@@ -118,3 +118,10 @@ const Counter = () => {
 ````bash
 npm i @reduxjs/toolkit react-redux
 ````
+
+## Redux and side effects
+- Reducer functions must be pure functions. They should not have side effects, be asynchronous, or mutate the state directly.
+- For the same input, a pure function always returns the same output.
+### How to handle side effects in Redux?
+- We can either use the useEffect hook in React components to handle side effects. Then redux won't be aware of the side effects.
+- Or we can use middleware libraries like redux-thunk or redux-saga to handle side effects

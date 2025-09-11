@@ -1,0 +1,1 @@
+export const API_URL = 'https://redux-test-app-dn-default-rtdb.firebaseio.com/';
