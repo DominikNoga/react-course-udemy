@@ -1,6 +1,7 @@
-import { Form, useActionData, useNavigate, useNavigation } from 'react-router-dom';
+import { Form, redirect, useActionData, useNavigate, useNavigation } from 'react-router-dom';
 
 import classes from './EventForm.module.css';
+import { addEvent, updateEvent } from '../utils/events-service/events-service';
 
 function EventForm({ method, event }) {
   const data = useActionData();
@@ -21,15 +22,15 @@ function EventForm({ method, event }) {
       }
       {
         data && data.errors &&
-          <ul>
-            {
-              Object.values(data.errors).map(err => (
-                <li>{err}</li>
-              ))
-            }
-          </ul>
+        <ul>
+          {
+            Object.values(data.errors).map(err => (
+              <li>{err}</li>
+            ))
+          }
+        </ul>
       }
-      <Form method='POST' className={classes.form}>
+      <Form method={method} className={classes.form}>
         <p>
           <label htmlFor="title">Title</label>
           <input
@@ -71,9 +72,9 @@ function EventForm({ method, event }) {
           />
         </p>
         <div className={classes.actions}>
-          <button 
-            disabled={isSubmitting} 
-            type="button" 
+          <button
+            disabled={isSubmitting}
+            type="button"
             onClick={cancelHandler}
           >
             Cancel
@@ -86,3 +87,29 @@ function EventForm({ method, event }) {
 }
 
 export default EventForm;
+
+export async function eventFormAction({ request, params }) {
+  const data = await request.formData();
+  const eventData = {
+    title: data.get('title'),
+    image: data.get('image'),
+    date: data.get('date'),
+    description: data.get('description'),
+  };
+  const { method } = request;
+  const isCreating = method === 'POST';
+  const fetchFunction = isCreating ? addEvent : updateEvent;
+  const eventId = params?.eventId;
+  const fetchArgs = isCreating ? [] : [eventId];
+  const url = isCreating ? '/events' : `/events/${eventId}`;
+  
+  try {
+    const response = await fetchFunction(...fetchArgs, eventData);
+    if (response.status === 422) {
+      return response;
+    }
+    return redirect(url);
+  } catch (error) {
+    throw new Response(error.message, { status: 500 });
+  }
+}
