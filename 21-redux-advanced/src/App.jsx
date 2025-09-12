@@ -3,16 +3,20 @@ import Cart from './components/Cart/Cart';
 import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import Notification from './components/UI/Notification';
-import { useCartData } from './hooks/useCartData';
+import { useUpdateCartData } from './hooks/useUpdateCartData';
+import { useGetCartData } from './hooks/useGetCartData';
 
 function App() {
-  const { isToggled } = useCartData();
-  // const notification = useSelector(state => state.ui.notification);
+  useUpdateCartData();
+  useGetCartData();
+  const notification = useSelector(state => state.ui.notification);
+  const isCartToggled = useSelector(state => state.ui.isCartToggled);
 
   return (
     <>
+      {notification && <Notification {...notification} />}
       <Layout>
-        {isToggled && <Cart />}
+        {isCartToggled && <Cart />}
         <Products />
       </Layout>
     </>

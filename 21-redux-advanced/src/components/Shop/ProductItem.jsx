@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import Card from '../UI/Card';
 import classes from './ProductItem.module.css';
-import { cartActions } from '../../store/cartSlice';
+import { cartActions } from '../../store/cartSlice/cartSlice';
 
 const getRandomInt = () => {
   return Math.floor(Math.random() * 100000000);

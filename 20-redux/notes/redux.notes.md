@@ -125,3 +125,34 @@ npm i @reduxjs/toolkit react-redux
 ### How to handle side effects in Redux?
 - We can either use the useEffect hook in React components to handle side effects. Then redux won't be aware of the side effects.
 - Or we can use middleware libraries like redux-thunk or redux-saga to handle side effects
+
+### Redux Thunk
+- Thunk is an action creator that returns a function instead of an action object.
+- this function returns a promise that resolves to an action object.
+```js
+export const sendCartData = (cart) => {
+  return async (dispatch) => {
+    showNotification(dispatch, {
+      status: 'pending',
+      title: 'Sending...',
+      message: 'Sending cart data!',
+    });
+    try {
+      await sendCartDataToAPI(cart);
+      dispatch(cartActions.resetChanged());
+      showNotification(dispatch, {
+        status: 'success',
+        title: 'Success!',
+        message: 'Sent cart data successfully!',
+      });
+    } catch (error) {
+      showNotification(dispatch, {
+        status: 'error',
+        title: 'Error!',
+        message: 'Sending cart data failed!',
+      });
+      dispatch(cartActions.resetChanged());
+    }
+  }
+};
+```
