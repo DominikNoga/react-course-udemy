@@ -8,6 +8,7 @@ import EditEventPage from './pages/edit-event-page/EditEventPage';
 import ErrorPage from './components/error-page/ErrorPage';
 import EventsPageLayout from './components/event-page-layout/EventsPageLayout';
 import { eventFormAction } from './components/EventForm';
+import NewsletterPage, { action as newsletterAction } from './components/Newsletter';
 
 export const EVENT_DETAILS_ID = 'event-detail';
 
@@ -52,8 +53,12 @@ const router = createBrowserRouter([
             element: <NewEventPage />,
             action: eventFormAction
           },
-
         ],
+      },
+      {
+        path: 'newsletter',
+        element: <NewsletterPage />,
+        action: newsletterAction,
       },
     ],
   }]

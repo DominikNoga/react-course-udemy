@@ -457,3 +457,41 @@ export async function action({request}) {
 
 const data = useActionData(); // this can be used in component, this holds response from BE
 ````
+
+#### Using action without a navigation(on any page)
+Sometimes we want to use action without navigating to another page, for example when
+subscribing to a newsletter. Or adding item to the cart.
+In order to do this we can use the 'useFetcher' hook which provides us with a
+'fetcher' object which has a 'Form' component and 'submit' method.
+```jsx
+function NewsletterSignup() {
+  // This hook allow us to use the action and submit the form without navigation to another page
+  // It is great for the actions that are available on multiple pages
+  // like newsletter signup form in the footer
+  // fetcher offers multiple other features like loading state, data returned from action etc.
+  const fetcher = useFetcher();
+  const { data, state } = fetcher;
+
+  useEffect(() => {
+    if (state === 'idle' && data && data.message) {
+      alert(data.message);
+    }
+  }, [data, state]);
+  return (
+    <fetcher.Form
+      method="post"
+      action='/newsletter'
+      className={classes.newsletter}
+    >
+      <input
+        type="text"
+        placeholder="Sign up for newsletter..."
+        aria-label="Sign up for newsletter"
+      />
+      <button>Sign up</button>
+    </fetcher.Form>
+  );
+}
+
+export default NewsletterSignup;
+```
