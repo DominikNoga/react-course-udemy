@@ -1,8 +1,10 @@
 import { Link, useSubmit } from 'react-router-dom';
 
 import classes from './EventItem.module.css';
+import { useAuthToken } from '../hooks/useAuthToken';
 
 function EventItem({ event }) {
+  const isAuthenticated = useAuthToken();
   const submit = useSubmit();
 
   function startDeleteHandler() {
@@ -19,10 +21,14 @@ function EventItem({ event }) {
       <h1>{event.title}</h1>
       <time>{event.date}</time>
       <p>{event.description}</p>
-      <menu className={classes.actions}>
-        <Link to="edit">Edit</Link>
-        <button onClick={startDeleteHandler}>Delete</button>
-      </menu>
+      {
+        isAuthenticated && (
+          <menu className={classes.actions}>
+            <Link to="edit">Edit</Link>
+            <button onClick={startDeleteHandler}>Delete</button>
+          </menu>
+        )
+      }
     </article>
   );
 }

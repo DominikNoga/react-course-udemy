@@ -1,12 +1,1 @@
-{
-  "events": [
-    {
-      "title": "A new event",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/M%C3%BCnchen_Panorama.JPG/1024px-M%C3%BCnchen_Panorama.JPG",
-      "date": "2022-10-01",
-      "description": "Some awesome event!",
-      "id": "2a42fcc4-ea21-4bdd-abf6-c40006dc66a9"
-    }
-  ],
-  "users": []
-}
+{"events":[{"title":"some conference","image":"https://images.squarespace-cdn.com/content/v1/58955bbb440243be53f79622/1682522003429-CJYYUJ327UVDDWB110WX/corporate+event+checklist.jpg","date":"2025-09-30","description":"adsdsfcscx","id":"43940954-350a-4b75-a39d-00346cc07c8d"},{"title":"A new event","image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/M%C3%BCnchen_Panorama.JPG/1024px-M%C3%BCnchen_Panorama.JPG","date":"2022-10-01","description":"Some awesome event!","id":"2a42fcc4-ea21-4bdd-abf6-c40006dc66a9"}],"users":[{"email":"dominik.noga2001@gmail.com","password":"$2a$12$rSVZ2mkNlqw77SE49ObODOQNxHIOhtBLiPVkk8Sba7MOge3ZbcGKu","id":"8c94da57-9e03-431c-8d3c-24750b460976"},{"email":"test@mail.com","password":"$2a$12$P1/Mu.o.kFBtUSIE0CMxx.Q9JtR9N9uRA0.KhbRyHyg6AjyHxXrD2","id":"6677c1e9-10c9-425a-8fff-245703a29226"}]}

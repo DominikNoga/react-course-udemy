@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 
 import classes from './EventForm.module.css';
+import authService from '../services/authService';
 
 function EventForm({ method, event }) {
   const data = useActionData();
@@ -94,29 +95,38 @@ export async function action({ request, params }) {
     description: data.get('description'),
   };
 
-  let url = 'http://localhost:8080/events';
+  let url = 'http://localhost:5000/events';
 
   if (method === 'PATCH') {
     const eventId = params.eventId;
-    url = 'http://localhost:8080/events/' + eventId;
+    url = 'http://localhost:5000/events/' + eventId;
   }
 
-  const response = await fetch(url, {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(eventData),
+  const headers = authService.headersWithToken({
+    'Content-Type': 'application/json',
   });
 
-  if (response.status === 422) {
-    return response;
-  }
+  console.log(headers);
 
-  if (!response.ok) {
-    throw json({ message: 'Could not save event.' }, { status: 500 });
-  }
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: headers,
+      body: JSON.stringify(eventData),
+    });
 
-  return redirect('/events');
+    if (response.status === 422) {
+      return response;
+    }
+
+    if (!response.ok) {
+      throw json({ message: 'Could not save event.' }, { status: 500 });
+    }
+
+    return redirect('/events');
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 }
 
