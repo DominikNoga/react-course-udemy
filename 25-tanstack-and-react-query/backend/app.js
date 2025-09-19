@@ -36,7 +36,6 @@ app.get('/events', async (req, res) => {
   if (max) {
     events = events.slice(events.length - max, events.length);
   }
-
   res.json({
     events: events.map((event) => ({
       id: event.id,
