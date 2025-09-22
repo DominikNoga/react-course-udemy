@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { API_URL } from '../../const/const';
 
 export default function EventItem({ event }) {
   const formattedDate = new Date(event.date).toLocaleDateString('en-US', {
@@ -8,7 +9,7 @@ export default function EventItem({ event }) {
   });
   return (
     <article className="event-item">
-      <img src={`http://localhost:3000/${event.image}`} alt={event.title} />
+      <img src={`${API_URL}/${event.image}`} alt={event.title} />
       <div className="event-item-content">
         <div>
           <h2>{event.title}</h2>

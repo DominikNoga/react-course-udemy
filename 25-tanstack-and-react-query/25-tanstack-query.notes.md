@@ -29,7 +29,7 @@ function App() {
 ```
 
 ## Basic Usage
-In order to use a tanstack query we need to use a special hook called `useQuery`.
+In order to use a tanstack query we need to use a special hook called `useQuery` which is only used for getting data.
 ```tsx
 import { useQuery } from '@tanstack/react-query';
 import { fetchEvents } from '../../utils/http.js';
@@ -81,6 +81,40 @@ const { data, isError, isPending, error } = useQuery({
   });
 ```
 
+## Handling data submission/Mutations
+- For handling data submission or mutations (like POST, PUT, DELETE requests), TanStack Query provides the `useMutation` hook.
+- This hook is designed to manage the state of these operations, including loading and error states.
+- It is optimised compared to useQuery, because it does not automatically send the request on mount. Insted, it provides a `mutate` function that you can call,when you want to perform the mutation.
+- we can add the key to the mutatation, but it is not required, because mutations are not cached like queries.
+- because we rather change something on the server, not stroing this locally.
+
+```tsx
+function Component() {
+  const { mutate, isPending, isError, error } = useMutation({
+    // request handler function that returns a promise
+    mutationFn: createNewEvent,
+    // like the name suggests, this function will be called when the mutation is successful
+    onSuccess: () => {
+      // Invalidate the 'events' query to refetch the data
+      // The success won't cause the refetching, but the invalidation will
+      queryClient.invalidateQueries({
+        // all the queries with this key will be invalidated, even those that only partially match the key
+        queryKey: ['events']
+      })
+      navigate('../');
+    }
+  });
+
+  function handleSubmit(eventData) {
+    // Call the mutate function to perform the mutation
+    mutate({
+      event: eventData
+    });
+  }
+}
+```
+
 ## My Questions
 - how the caching works under the hood?
 - why the queryKey is an array and what are the possible values?
+- difference between isLoading and isPending?

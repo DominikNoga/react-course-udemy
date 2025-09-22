@@ -67,10 +67,7 @@ app.get('/events/:id', async (req, res) => {
       .status(404)
       .json({ message: `For the id ${id}, no event could be found.` });
   }
-
-  setTimeout(() => {
-    res.json({ event });
-  }, 1000);
+  res.json({ event });
 });
 
 app.post('/events', async (req, res) => {
@@ -169,6 +166,6 @@ app.delete('/events/:id', async (req, res) => {
   }, 1000);
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+app.listen(5000, () => {
+  console.log('Server running on port 5000');
 });
