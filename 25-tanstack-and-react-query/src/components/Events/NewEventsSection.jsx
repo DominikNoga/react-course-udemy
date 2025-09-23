@@ -6,8 +6,8 @@ import { fetchEvents } from '../../utils/http.js';
 
 export default function NewEventsSection() {
   const { data, isError, isPending, error } = useQuery({
-    queryFn: fetchEvents,
-    queryKey: ['events'],
+    queryKey: ['events', {  max: 3 }],
+    queryFn: ({signal, queryKey}) => fetchEvents({ signal,  ...queryKey[1] }),
     // how long the tanstack query should wait to send the request for the data again
     // So for example, if you set it to 5 minutes, then if you navigate away from the component and come back within 5 minutes,
     // it will use the cached data and not send a new request.

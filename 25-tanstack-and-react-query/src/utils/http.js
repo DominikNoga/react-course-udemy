@@ -5,8 +5,9 @@ export const queryClient = new QueryClient();
 
 const EVENTS_URL = `${API_URL}/events`;
 
-export async function fetchEvents({ signal, searchTerm }) {
-  const searchParams = `${searchTerm ? `?search=${searchTerm}` : ''}`;
+export async function fetchEvents({ signal, searchTerm, max }) {
+  let searchParams = searchTerm || max ? '?' : '';
+  searchParams += `${searchTerm ? `?search=${searchTerm}` : ''}${max ? `&max=${max}` : ''}`;
   const response = await fetch(`${EVENTS_URL}${searchParams}`, { signal });
 
   if (!response.ok) {
@@ -25,6 +26,27 @@ export async function createNewEvent(eventData) {
   const response = await fetch(EVENTS_URL, {
     method: 'POST',
     body: JSON.stringify(eventData),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const error = new Error('An error occurred while creating the event');
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { event } = await response.json();
+
+  return event;
+}
+
+export async function editEvent(eventData) {
+  const response = await fetch(`${EVENTS_URL}/${eventData.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({event: eventData}),
     headers: {
       'Content-Type': 'application/json',
     },

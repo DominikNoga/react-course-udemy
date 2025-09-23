@@ -81,6 +81,17 @@ const { data, isError, isPending, error } = useQuery({
   });
 ```
 
+## Passing key as a parameter
+- The `queryKey` can be any serializable value, not just a string.
+- We can use the key to pass parameters to the query function.
+- This is useful when you want to fetch data based on some dynamic parameters.
+```tsx
+const { data, isError, isPending, error } = useQuery({
+  queryKey: ['events', {search: searchTerm}],
+  queryFn: ({signal, queryKey}) => fetchEvents({ signal, ...queryKey[1] }),
+});
+```
+
 ## Handling data submission/Mutations
 - For handling data submission or mutations (like POST, PUT, DELETE requests), TanStack Query provides the `useMutation` hook.
 - This hook is designed to manage the state of these operations, including loading and error states.
@@ -114,7 +125,41 @@ function Component() {
 }
 ```
 
+## Optimistic Updates
+- Optimistic updates are a technique used to improve the user experience by updating the UI immediately, before the server confirms that the operation was successful.
+- This can make the application feel more responsive, as users see the changes right away, rather than waiting for a server response.
+- To implement optimistic updates with TanStack Query, you can use the `onMutate`, `onError`, and `onSettled` callbacks provided by the `useMutation` hook.
+```tsx
+const { mutate, isPending: isEditingEvent } = useMutation({
+    mutationFn: (formData) => editEvent({ ...formData, id }),
+    // onSuccess: () => {
+    //   // Navigate back to the event details page after successful edit
+    //   queryClient.invalidateQueries({ queryKey: ['events', id] });
+    //   navigate(`../`);
+    // },
+    onMutate: async (eventData) => {
+      // cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      // this will only cancel useQuery fetches not useMutation
+      await queryClient.cancelQueries({ queryKey: ['events', id] });
+      const previousEvent = queryClient.getQueryData(['events', id]);
+      // Optimistic update
+      queryClient.setQueryData(['events', id], (oldEvent) => ({ ...oldEvent, ...eventData, id }));
+      // context that will be available in onError callback
+      return { previousEvent };
+    },
+    onError: (err, newEvent, context) => {
+      queryClient.setQueryData(['events', id], context.previousEvent);
+    },
+    onSettled: () => {
+      // this will run whether the mutation fails or succeeds
+      // Invalidate the event query to refetch the updated data
+      queryClient.invalidateQueries({ queryKey: ['events', id] });
+    },
+  });
+```
+
 ## My Questions
 - how the caching works under the hood?
 - why the queryKey is an array and what are the possible values?
 - difference between isLoading and isPending?
+- read more about optimistic updates and it's pros and cons
