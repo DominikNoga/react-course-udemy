@@ -42,6 +42,9 @@ export default function NewEventsSection() {
     queryKey: ['events'],
     // Some function that returns a promise
     queryFn: fetchEvents,
+    // Optional: configure retry behavior on failure
+    // By default, it retries 3 times
+    retry: boolean | number | (failureCount: number, error: TError)
   });
 
   // ...
@@ -158,8 +161,32 @@ const { mutate, isPending: isEditingEvent } = useMutation({
   });
 ```
 
+## Configuring the query client
+- https://tanstack.com/query/latest/docs/framework/react/guides/default-query-function
+- The `QueryClient` can be configured with default options that will apply to all queries and mutations.
+- This is useful for setting global defaults, such as the `staleTime` or `gcTime`.
+- But also to set a default `queryFn` that will be used for all queries that do not provide their own `queryFn`.
+  We can make it reusable by passing the query key to the function.
+```tsx
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      queryFn: defaultQueryFn,
+    },
+  },
+})
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <YourApp />
+    </QueryClientProvider>
+  )
+}
+
+```
+
 ## My Questions
 - how the caching works under the hood?
-- why the queryKey is an array and what are the possible values?
 - difference between isLoading and isPending?
 - read more about optimistic updates and it's pros and cons
