@@ -15,8 +15,10 @@ npx create-next-app@latest <project-name>
   - the routes are created out of the folders inside the /app
 ![alt text](image.png)
 - there are some special file names
-  - page.js -> tells next to render this component under a given route.
-    - for example when we will add route /about/page.jsx
+
+### page.js
+Tells next to render this component under a given route.
+for example when we will add route /about/page.jsx
 ```jsx
 // This will render under /about
 export default function AboutPage() {
@@ -29,11 +31,13 @@ export default function AboutPage() {
 }
 
 ```
-  - layout.js -> it wrapps the page
-    - in root layout we use html and body elements
-    - we do not add head, instead we add metadata, which will work as head. The name is reserved
-    - each next project needs a root layout
-    - each route can have it's own layout, but it is not required
+### layout.js
+it wrapps the page
+- in root layout we use html and body elements
+- we do not add head, instead we add metadata, which will work as head. The name is reserved
+- each next project needs a root layout
+- each route can have it's own layout, but it is not required
+
 ```jsx
 import './globals.css'
 
@@ -50,12 +54,60 @@ export default function RootLayout({ children }) {
   );
 }
 ```
-  - icon.{png, jpg, etc} -> This file will be used as a favicon (the small one in the navbar)
-  - not-found.js => Fallback page for "Not Found" errors (thrown by sibling or nested pages or layouts)
-  - error.js => Fallback page for other errors (thrown by sibling pages or nested pages or layouts)
-  - loading.js => Fallback page which is shown whilst sibling or nested pages (or layouts) are fetching data
-  - route.js => Allows you to create an API route (i.e., a page which does NOT return JSX code but instead data, e.g., in the JSON format)
 
+### icon.{png, jpg, etc}
+This file will be used as a favicon (the small one in the navbar)
+
+### not-found.js
+Fallback page for "Not Found" errors (thrown by sibling or nested pages or layouts)
+```jsx
+export default function NotFound() {
+  return (
+    <main className="not-found">
+      <h1>Not found</h1>
+      <p>Unfortunately, we could not find the requested page or resource.</p>
+    </main>
+  );
+}
+
+```
+- We can also call the not found function provided by next. And it will render the nearest not-found component
+```jsx
+export default async function MealsDetailPage({ params }) {
+  const { slug: mealSlug } = await params;
+  const meal = await getMealBySlug(mealSlug);
+
+  if (!meal) {
+    notFound();
+  }
+}
+```
+
+### error.js
+Must be a client component, because it need to catch both server and client side errors
+Fallback page for other errors (thrown by sibling pages or nested pages or layouts)
+```jsx
+'use client'
+
+import React from 'react'
+  
+export default function ErrorPage({error}) {
+  return  (
+    <main>
+      <h1>Something went wrong!</h1>
+      <p>{error?.message ?? 'Unknown error occurred'}</p>
+    </main>
+  )
+}
+```
+
+### loading.js
+Fallback page which is shown whilst sibling or nested pages (or layouts) are fetching data
+
+### route.js
+Allows you to create an API route (i.e., a page which does NOT return JSX code but instead data, e.g., in the JSON format)
+
+### More about file structure
 - All routes are located in the /app folder, we can safely store other components in the app folder, and do not be scared, that they will have own routes,
   because the page.js component or route.js is needed. 
 - if we want to make sure component is not routed. We can make it private by adding _name
@@ -78,15 +130,6 @@ export default function BlogPostPage({ params }) {
 }
 ````
 
-## Server components
-Normal React component, when it comes to syntax, but it is executed on the server.
-Which means that it runs on backed, for example the console.log won't be shown in the browser, but in the terminal.
-The server component html is sent to the browser.
-
-### Pages
-When navigating between pages we should use next/Link component. It allows us to use the SPA routing without reloading.
-
-
 ## Next.js custom components
 Next framework is offering us a lot of built in components. They can be helpful for a lot of reasons, like performance or other.
 
@@ -103,5 +146,48 @@ For example allows to lazy load the image by default.
   alt="A plate with food on it"
   width={50}
   height={50}
+  fill // this property can be used when we don't know the width of the element, for example when it is a dynamic image. It will fill it's container
 />
 ```
+
+## Components in Next.js
+There are 2 types of React components RSC and CC
+- RSC = React Server Components -> This is a default component in next.js, by default all components are server-side.
+Such component is rendered on the server.
+  - Pros:
+    - better SEO, because web search crawler will see the ready page, whereas when using vanilla React, all html is loaded when entering the page. And it is empty at the start.
+    - better performance, cause by smaller amount of client code being processed in the browser.
+    - you can easily get stuff from the database and use async code inside the component function code
+  - Cons/limitations:
+    - Server components are not able to use most of React hooks like useState, or useEffect
+    - Server components cannot handle event handlers
+
+- CC = Client Component - A component that is rendered in the browser and it's code is executed in the browser.
+  - In order to declare a client component we need to add 'use client' statement at the top
+  - Because client components are worse for the performance, we should use them for as small components as possible
+
+### Fetching data in a server component
+In a server component we do not need to use axios or the fetch API. We can simply get the data directly from the database.
+
+````jsx
+// db code
+export async function getAllMeals() {
+  const query = `
+    SELECT * FROM meals
+  `;
+  const meals = db.prepare(query).all();
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  return meals;
+}
+
+async function MealsPage() {
+  const meals = await getAllMeals();
+  return (
+    <>
+      <main className={classes.main}>
+        <MealsGrid meals={meals} />
+      </main>
+    </>
+  );
+}
+````
