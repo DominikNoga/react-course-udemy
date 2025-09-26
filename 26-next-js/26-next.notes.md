@@ -191,3 +191,64 @@ async function MealsPage() {
   );
 }
 ````
+
+## Handling forms
+
+### Form submission
+In order to submit a form data we need to set up so called 'form action'.
+Which is a function that should run on the form submission. This action should 'use server'.
+
+```js
+'use server';
+
+import { redirect } from "next/navigation";
+import { createMeal } from "./meals";
+
+// this is called a server action
+// behind the scenes next.js will create an api route for us
+// server action can only be used in server components
+export async function shareMeal(formData) {
+  const meal = {
+    creator: formData.get('name'),
+    creator_email: formData.get('email'),
+    title: formData.get('title'),
+    summary: formData.get('summary'),
+    instructions: formData.get('instructions'),
+    image: formData.get('meal-image'),
+  }
+  // here we call some function that will handle saving the data on the server
+  await createMeal(meal);
+  redirect('/meals');
+}
+```
+
+```jsx
+export default function ShareMealPage() {
+  return (
+    // Here we assign the server action to our form
+    <form className={classes.form} action={shareMeal}>
+      // some fields...
+    </form>
+  )
+}
+```
+
+### Handling form status
+React provides us with a hook that allows us to get the currently submitted form status.
+The simplest example would be to check if the form is currently pending and act based on this.
+
+```jsx
+'use client';
+// only available in a client components
+import { useFormStatus } from 'react-dom';
+
+export default function MealsFormSubmit() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button disabled={pending}>
+      {pending ? 'Submitting...' : 'Share Meal'}
+    </button>
+  );
+}
+```
