@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createMeal } from "./meals";
+import { revalidatePath } from "next/cache";
 
 // this is called a server action
 // behind the scenes next.js will create an api route for us
@@ -24,6 +25,11 @@ export async function shareMeal(prevState, formData) {
   }
 
   await createMeal(meal);
+  // revalidate the /meals path to show the new meal
+  // but only this path, not even child paths will be revalidated
+  revalidatePath('/meals');
+  // this will revalidate every route in /meals that uses the layout.js file
+  revalidatePath('/meals', 'layout');
   redirect('/meals');
 }
 
