@@ -166,6 +166,12 @@ Such component is rendered on the server.
   - In order to declare a client component we need to add 'use client' statement at the top
   - Because client components are worse for the performance, we should use them for as small components as possible
 
+- CC cannot render a RSC, but RSC can render CC.
+- The CC can render RSC as child. This works because the component is rendered then in a parent server component and then sent to the client.
+- in next when we add RSC into CC, then next will change it to the CC under the hood.
+
+![alt text](image-2.png)
+
 ### Fetching data in a server component
 In a server component we do not need to use axios or the fetch API. We can simply get the data directly from the database.
 
