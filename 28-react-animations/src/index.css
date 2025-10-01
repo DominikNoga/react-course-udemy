@@ -302,11 +302,6 @@ main {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.new-challenge-actions button:hover,
-.button:hover {
-  background-color: #0f3cef;
-}
-
 .modal {
   top: 10%;
   border-radius: 6px;
@@ -314,7 +309,6 @@ main {
   width: 30rem;
   max-width: 90%;
   z-index: 10;
-  animation: show-modal 0.3s ease-out both;
 }
 
 .modal h2 {
